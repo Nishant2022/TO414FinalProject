@@ -2,3 +2,26 @@
 load("../Data/SpotifyTrainTest.Rdata")
 ```
 
+#Building Decision Tree Model
+```{r}
+library(C50)
+library(caret)
+
+
+# Build the decision tree
+decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
+
+# Make predictions on the test set
+decision_tree_pred <- predict(decision_tree, newdata = spotify_test)
+
+# Convert predictions to numeric
+decision_tree_pred <- as.numeric(decision_tree_pred)
+
+# Calculate regression metrics
+metrics <- postResample(pred = decision_tree_pred, obs = spotify_test$track_popularity)
+
+# Print the metrics
+print(metrics)
+
+```
+
