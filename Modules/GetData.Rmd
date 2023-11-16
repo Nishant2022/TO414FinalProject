@@ -1,0 +1,47 @@
+# Data Cleaning
+
+```{r}
+library(janitor)
+```
+
+```{r read_data}
+spotify_data <- read.csv("../spotify_songs.csv", stringsAsFactors = T)
+```
+
+```{r remove_duplicates}
+spotify_data <- spotify_data[!duplicated(spotify_data$track_name), ]
+summary(spotify_data)
+```
+
+```{r}
+spotify_data$track_id <- NULL
+spotify_data$track_album_id <- NULL
+spotify_data$playlist_id <- NULL
+spotify_data$track_album_release_date <- NULL
+spotify_data$track_name <- NULL
+spotify_data$track_artist <- NULL
+spotify_data$playlist_name <- NULL
+spotify_data$track_album_name <- NULL
+spotify_data$playlist_subgenre <- NULL # The genre has more general info
+spotify_data$key <- as.factor(spotify_data$key)
+summary(spotify_data)
+str(spotify_data)
+```
+```{r}
+spotifymm <- as.data.frame(model.matrix(~ . -1, spotify_data))
+spotifymm <- clean_names(spotifymm)
+str(spotifymm)
+```
+
+```{r}
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x))) 
+}
+
+spotify_norm <- as.data.frame(lapply(spotifymm, normalize))
+summary(spotify_norm)
+```
+
+```{r}
+save(spotify_data, spotifymm, spotify_norm, file = "../Data/CleanedData.Rdata")
+```
