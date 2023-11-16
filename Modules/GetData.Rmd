@@ -26,7 +26,15 @@ spotify_data$playlist_subgenre <- NULL # The genre has more general info
 spotify_data$key <- as.factor(spotify_data$key)
 summary(spotify_data)
 str(spotify_data)
+# median is 43 for track popularity
 ```
+```{r}
+spotify_data$track_popularity <- ifelse(spotify_data$track_popularity >= 43,1,0)
+str(spotify_data$track_popularity)
+summary(spotify_data)
+```
+
+
 ```{r}
 spotifymm <- as.data.frame(model.matrix(~ . -1, spotify_data))
 spotifymm <- clean_names(spotifymm)
