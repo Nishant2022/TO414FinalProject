@@ -1,0 +1,32 @@
+
+```{r}
+load("../Data/CleanedData.Rdata")
+```
+
+```{r}
+train_percentage <- 0.5
+set.seed(12345)
+train_rows <- sample(1:nrow(spotify_data), train_percentage * nrow(spotify_data))
+
+spotify_train <- spotify_data[train_rows, ]
+spotify_test <- spotify_data[-train_rows, ]
+
+spotify_mm_train <- spotifymm[train_rows, ]
+spotify_mm_test <- spotifymm[-train_rows, ]
+
+spotify_norm_train <- spotify_norm[train_rows, ]
+spotify_norm_test <- spotify_norm[-train_rows, ]
+
+spotify_norm_train_x <- spotify_norm_train[, -match("track_popularity", names(spotify_norm_train))]
+spotify_norm_train_y <- spotify_norm_train[, match("track_popularity", names(spotify_norm_train))]
+spotify_norm_test_x <- spotify_norm_test[, -match("track_popularity", names(spotify_norm_test))]
+spotify_norm_test_y <- spotify_norm_test[, match("track_popularity", names(spotify_norm_test))]
+```
+
+```{r}
+save(spotify_test, spotify_train, file = "../Data/SpotifyTrainTest.Rdata")
+save(spotify_mm_test, spotify_mm_train, file = "../Data/SpotifyTrainTestMM.Rdata")
+save(spotify_norm_test, spotify_norm_train, file = "../Data/SpotifyTrainTestNorm.Rdata")
+save(spotify_norm_test_x, spotify_norm_test_y, spotify_norm_train_x, spotify_norm_train_y, file = "../Data/SpotifyTrainTestNormXY.Rdata")
+```
+
