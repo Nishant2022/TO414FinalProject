@@ -12,6 +12,8 @@ set.seed(12345)
 ann_model <- neuralnet(track_popularity ~ ., data = spotify_norm_train, lifesign = "full")
 
 ann_prediction <- predict(ann_model, spotify_norm_test)
-postResample(ann_prediction, spotify_norm_test$track_popularity)
+summary(ann_prediction)
+ann_pred_binary <- ifelse(ann_prediction > 0.55, 1, 0) # slightly over median = 0.5426
+confusionMatrix(as.factor(ann_pred_binary), as.factor(spotify_norm_test$track_popularity), positive = "1")
 ```
 

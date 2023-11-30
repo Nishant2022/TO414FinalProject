@@ -21,8 +21,15 @@ grid_rf <- expand.grid(.mtry = c(2, 4, 8, 16))
 
 ```{r}
 set.seed(12345)
-m_rf <- train(default ~ ., data = credit, method = "rf",
+spotify_data$track_popularity <- as.factor(spotify_data$track_popularity)
+summary(spotify_data$track_popularity)
+m_rf <- train(track_popularity ~ ., data = spotify_data, method = "rf",
               metric = "Kappa", trControl = ctrl,
               tuneGrid = grid_rf)
 m_rf
 ```
+
+```{r}
+saveRDS(m_rf, "rf_basemodel.rds")
+```
+

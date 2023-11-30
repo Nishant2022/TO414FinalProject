@@ -14,8 +14,12 @@ decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
 # Make predictions on the test set
 decision_predict <- predict(decision_tree, spotify_test)
 
-#Evaluate predictions
-confusionMatrix(as.factor(decision_predict), as.factor(spotify_test$track_popularity), positive = "1")
+# Calculate regression metrics
+metrics <- confusionMatrix(as.factor(decision_tree_pred), as.factor(spotify_test$track_popularity), positive = "1")
+
+# Print the metrics
+print(metrics)
+
 
 ```
 
