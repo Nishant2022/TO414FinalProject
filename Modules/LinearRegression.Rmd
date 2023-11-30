@@ -5,19 +5,24 @@ load("../Data/SpotifyTrainTest.Rdata")
 
 # Build model
 ```{r}
-linear_basemodel <- lm(track_popularity ~ ., data =spotify_train)
-summary(linear_basemodel)
-coefficients(linear_basemodel)
+logistic_basemodel <- glm(track_popularity ~ ., data =spotify_train)
+summary(logistic_basemodel)
 ```
 # Predict
 ```{r}
-linear_base_prediction <- predict(linear_basemodel, spotify_test)
-summary(linear_base_prediction)
+logistic_base_prediction <- predict(logistic_basemodel, spotify_test, type = "response")
+summary(logistic_base_prediction)
+logistic_base_pred <- ifelse(logistic_base_prediction >0.53,1,0)
+summary(logistic_base_pred)
 ```
 
 # Evaluate
 ```{r}
 library(caret)
-postResample(linear_base_prediction, spotify_test$track_popularity)
+confusionMatrix(as.factor(logistic_base_pred), as.factor(spotify_test$track_popularity))
+```
+
+```{r}
+
 ```
 

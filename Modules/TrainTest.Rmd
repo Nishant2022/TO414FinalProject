@@ -1,6 +1,7 @@
 
 ```{r}
 load("../Data/CleanedData.Rdata")
+load("../Data/CleanedData.Rdata")
 ```
 
 ```{r}
