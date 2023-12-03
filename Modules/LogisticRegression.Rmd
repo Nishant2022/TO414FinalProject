@@ -23,6 +23,26 @@ confusionMatrix(as.factor(logistic_base_pred), as.factor(spotify_test$track_popu
 ```
 
 ```{r}
+# if we only used significant 
+improved_logisitic = glm(track_popularity ~ playlist_genre*danceability*energy*loudness + playlist_genre*acousticness*instrumentalness*tempo*duration_ms, data = spotify_train)
+summary(improved_logisitic)
 
+# predict
+logistic_improved_prediction <- predict(improved_logisitic, spotify_test, type = "response")
+summary(logistic_improved_prediction) # prediction negative?
+logistic_improved_pred <- ifelse(logistic_improved_prediction >0.5251,1,0) # median
+summary(logistic_improved_pred)
+
+# evaluate
+library(caret)
+confusionMatrix(as.factor(logistic_improved_pred), as.factor(spotify_test$track_popularity))
+```
+
+
+
+```{r}
+saveRDS(logistic_base_pred,"logistic_pred.rds")
+saveRDS(logistic_improved_pred,"improved_log_pred.rds")
+saveRDS(log_prob_pred,"log_prob.rds")
 ```
 

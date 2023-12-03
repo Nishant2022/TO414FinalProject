@@ -1,0 +1,43 @@
+```{r}
+log_pred <- readRDS("improved_log_pred.rds")
+knn_pred <- readRDS("knn_prob_pred.rds")
+ann_pred <- readRDS("ann_prob.rds")
+rf_pred <- readRDS("rf_pred.rds") # i don't know how to access specific tree
+svm_pred <- readRDS("svm_pred.rds")
+decision_tree_pred <- readRDS("decision_tree_pred.rds")
+load("../Data/SpotifyTrainTest.Rdata")
+```
+
+
+```{r}
+spotify_preds <- data.frame(
+  log = log_pred,
+  knn = knn_pred,
+  ann = ann_pred,
+  svm = svm_pred,
+  decision_tree = decision_tree_pred,
+  rf = rf_pred,
+  true = spotify_Test$track_popularity
+)
+
+```
+
+```{r}
+set.seed(12345)
+
+tree_train_rows <-- sample(1:nrow(spotify_preds), 0.7*nrow(spotify_preds))
+tree_train <- spotify_preds[tree_train_rows,]
+tree_test <- spotify_preds[-tree_train_rows,]
+
+error_cost <- matrix(c(0,1,5,0), nrow = 2)
+# we are going to underpredict ones, so we need to force it to make it make more ones 
+# bc if we don't we will have more false negative
+# will adjust this as follow
+
+tree_model <- C5.0(as.factor(true) ~ ., data = spotify_train, costs = error_cost)
+tree_predict <- predict(tree_model, tree_test)
+
+print(confusionMatrix(as.factor(tree_predict), as.factor(tree_test$true), positive = "1"))
+plot(tree_model)
+```
+

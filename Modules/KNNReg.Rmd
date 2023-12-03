@@ -21,6 +21,8 @@ knn.m_best_k <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_trai
 knn.m_150 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 150)
 knn.m_200 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 200)
 
+knn_model_nonoptimal_k3 <- knn(tele_norm_train_x, tele_norm_test_x,tele_norm_train_y, k = 3) # gives us factor
+probprediction_knn <- knn(spotify_norm_train_x, spotify_norm_test_x,spotify_norm_train_y, k = 136, prob = TRUE)
 
 confusionMatrix(as.factor(knn.m_5), as.factor(spotify_norm_test_y)) # kappa = 0.133
 confusionMatrix(as.factor(knn.m_7), as.factor(spotify_norm_test_y)) # kappa = 0.1418
@@ -31,6 +33,7 @@ confusionMatrix(as.factor(knn.m_150), as.factor(spotify_norm_test_y)) # kappa = 
 confusionMatrix(as.factor(knn.m_200), as.factor(spotify_norm_test_y)) # kappa = 0.1756
 ```
 ```{r}
-saveRDS(knn.m_best_k, "knn_model.rds")
+saveRDS(knn.m_best_k, "knn_pred.rds")
+saveRDS(probprediction_knn, "knn_prob_pred.rds")
 ```
 
