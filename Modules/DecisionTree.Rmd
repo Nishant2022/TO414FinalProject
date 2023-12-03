@@ -19,7 +19,9 @@ metrics <- confusionMatrix(as.factor(decision_tree_pred), as.factor(spotify_test
 
 # Print the metrics
 print(metrics)
+```
 
-
+```{r}
+saveRDS(decision_tree_pred,"decision_tree_pred.rds")
 ```
 

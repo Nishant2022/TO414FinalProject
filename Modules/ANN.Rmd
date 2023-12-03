@@ -17,3 +17,8 @@ ann_pred_binary <- ifelse(ann_prediction > 0.55, 1, 0) # slightly over median = 
 confusionMatrix(as.factor(ann_pred_binary), as.factor(spotify_norm_test$track_popularity), positive = "1")
 ```
 
+```{r}
+saveRDS(ann_pred_binary, "ann_pred.RDS")
+saveRDS(ann_prediction, "ann_prob.rds")
+```
+

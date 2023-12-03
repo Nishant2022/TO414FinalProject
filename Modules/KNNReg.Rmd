@@ -1,38 +1,39 @@
 ```{r}
 load("../Data/SpotifyTrainTestNormXY.Rdata")
+```
 
+
+```{r}
 library(class)
 library(caret)
 
-#ctrl <- trainControl(method = "cv", number = 10)
+ctrl <- trainControl(method = "cv", number = 10)
 
-#knn_train <- train(spotify_norm_train_x, as.factor(spotify_norm_train_y), method = "knn", tuneGrid = data.frame(k = seq(1, 150, by = 5)), trControl = ctrl)
-#best_k <- knn_train$bestTune$k
-#print(best_k) = 146
+knn_train <- train(spotify_norm_train_x, as.factor(spotify_norm_train_y), method = "knn", tuneGrid = data.frame(k = seq(1, 150, by = 5)), trControl = ctrl)
+best_k <- knn_train$bestTune$k
+print(best_k) # 136
 
-knn.m <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 38)
+knn.m_5 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 5)
+knn.m_7 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 7)
+knn.m_9 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 9)
+knn.m_100 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 100)
+knn.m_best_k <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 136)
+knn.m_150 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 150)
+knn.m_200 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 200)
 
-knn.pred <- as.numeric(knn.m)
-#print(knn.pred)
+knn_model_nonoptimal_k3 <- knn(tele_norm_train_x, tele_norm_test_x,tele_norm_train_y, k = 3) # gives us factor
+probprediction_knn <- knn(spotify_norm_train_x, spotify_norm_test_x,spotify_norm_train_y, k = 136, prob = TRUE)
 
-knn.pr <- postResample(knn.pred, spotify_norm_test_y)
-
-print(knn.pr)
-
-#k = 5:   RMSE      Rsquared      MAE 
-#   46.25540695  0.01534041 39.32182063 
-
-# k = 146:  RMSE        Rsquared      MAE 
-#      18.844490638  0.006866674  6.249155389 
-
-# k = 8: RMSE      Rsquared      MAE 
-#  45.33168530  0.01616335 37.65990166 
-
-# k = 3:  RMSE       Rsquared     MAE 
-#.     46.74750336  0.01293929 40.34160741 
-# k = 38: RMSE       Rsquared     MAE 
-#.     37.57467042  0.01320804 25.45239633 
-
-
+confusionMatrix(as.factor(knn.m_5), as.factor(spotify_norm_test_y)) # kappa = 0.133
+confusionMatrix(as.factor(knn.m_7), as.factor(spotify_norm_test_y)) # kappa = 0.1418
+confusionMatrix(as.factor(knn.m_9), as.factor(spotify_norm_test_y)) # kappa = 0.1439
+confusionMatrix(as.factor(knn.m_100), as.factor(spotify_norm_test_y)) # kappa = 0.1719
+confusionMatrix(as.factor(knn.m_best_k), as.factor(spotify_norm_test_y)) # kappa = 0.1814 accuracy 0.5887
+confusionMatrix(as.factor(knn.m_150), as.factor(spotify_norm_test_y)) # kappa = 0.1758
+confusionMatrix(as.factor(knn.m_200), as.factor(spotify_norm_test_y)) # kappa = 0.1756
 ```
-## All pretty low r squared values; will need to improve the model/ find a way to get the best k
+```{r}
+saveRDS(knn.m_best_k, "knn_pred.rds")
+saveRDS(probprediction_knn, "knn_prob_pred.rds")
+```
+
