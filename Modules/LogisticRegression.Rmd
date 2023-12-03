@@ -1,14 +1,14 @@
-# Load prepared train and test data
+We load prepared train and test data that is not normalized.
 ```{r}
 load("../Data/SpotifyTrainTest.Rdata")
 ```
 
-# Build model
+We build our basemodel by simply putting all variables into account.
 ```{r}
 logistic_basemodel <- glm(track_popularity ~ ., data =spotify_train)
 summary(logistic_basemodel)
 ```
-# Predict
+Using the base model, we predict the track_popularity. The prediction comes in probablity, so using the median as the threshold, we change the prediction into binary so that we can evaluate the model using confusion matrix.
 ```{r}
 logistic_base_prediction <- predict(logistic_basemodel, spotify_test, type = "response")
 summary(logistic_base_prediction)
@@ -16,17 +16,20 @@ logistic_base_pred <- ifelse(logistic_base_prediction >0.53,1,0)
 summary(logistic_base_pred)
 ```
 
-# Evaluate
+We then evaluate the data with said confusion matrix. Because we choose the median as a threshold, the numbers of false negative and false positive are very close to each other. We do want false negative to be a little lower in the business aspect, but we will consider such in the stacked model. As a result, we get an accuracy of 0.6115 and kappa of 0.223.
 ```{r}
 library(caret)
 confusionMatrix(as.factor(logistic_base_pred), as.factor(spotify_test$track_popularity))
 ```
 
+We attempted to improve our model by only taking statistically significant variables in the base model into account.
 ```{r}
-# if we only used significant 
 improved_logisitic = glm(track_popularity ~ playlist_genre*danceability*energy*loudness + playlist_genre*acousticness*instrumentalness*tempo*duration_ms, data = spotify_train)
 summary(improved_logisitic)
+```
 
+After going through the same process as the basemodel, we found the this model was in fact an improvemnet from the base model as the accuarcy and the kappa value are both higher than the base model(0.6115 -> 0.6171 / 0.223 -> 0.2343).
+```{r}
 # predict
 logistic_improved_prediction <- predict(improved_logisitic, spotify_test, type = "response")
 summary(logistic_improved_prediction) # prediction negative?
@@ -38,8 +41,9 @@ library(caret)
 confusionMatrix(as.factor(logistic_improved_pred), as.factor(spotify_test$track_popularity))
 ```
 
+Therefore, we are going to use the improved model in the stacked model to maximized accuarcy and kappa. We export the binary data, but most importantly the prediction in probablity so that we can have more of an accurate prediction in the stacked model.s
 ```{r}
-saveRDS(logistic_base_pred,"logistic_pred.rds")
+#saveRDS(logistic_base_pred,"logistic_pred.rds")
 saveRDS(logistic_improved_pred,"improved_log_pred.rds")
 saveRDS(log_prob_pred,"log_prob.rds")
 ```

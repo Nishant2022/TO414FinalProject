@@ -1,12 +1,14 @@
+We load the cleaned data that is appropriated for random forest algorith: not normalized or seperated into explanatory/response variable .
 ```{r}
 load("../Data/CleanedData.RData")
 ```
 
+Import necessary library
 ```{r}
 library(randomForest)
 library(caret)
 ```
-
+We run the random forest algorithm without any model tunning.
 ```{r}
 set.seed(12345)
 rf <- randomForest(track_popularity ~ ., data = spotify_data)

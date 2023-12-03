@@ -1,10 +1,11 @@
+We load prepared train and test model matrix data and the appropriate library.
 ```{r}
 load("../Data/SpotifyTrainTestMM.Rdata")
+library(kernlab)
 ```
 
 Below, we train and test our data using the SVM model. We experiment with multiple different kernels, namely, laplacedot, rbfdot, and vanilladot.
 ```{r}
-library(kernlab)
 spotify_svm_laplace <- ksvm(track_popularity ~ ., data = spotify_mm_train,
                           kernel = "laplacedot")
 spotify_svm_rbf <- ksvm(track_popularity ~ ., data = spotify_mm_train,
