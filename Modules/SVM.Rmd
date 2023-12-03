@@ -1,0 +1,16 @@
+```{r}
+load("../Data/SpotifyTrainTestMM.Rdata")
+```
+
+```{r}
+library(kernlab)
+spotify_svm <- ksvm(track_popularity ~ ., data = spotify_mm_train,
+                          kernel = "laplacedot")
+```
+
+
+```{r}
+spotify_svm_pred <- predict(spotify_svm, spotify_mm_test)
+head(spotify_svm_pred)
+postResample(spotify_svm_pred, as.factor(spotify_mm_test$track_popularity))
+```
