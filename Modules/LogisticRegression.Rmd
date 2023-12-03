@@ -38,8 +38,6 @@ library(caret)
 confusionMatrix(as.factor(logistic_improved_pred), as.factor(spotify_test$track_popularity))
 ```
 
-
-
 ```{r}
 saveRDS(logistic_base_pred,"logistic_pred.rds")
 saveRDS(logistic_improved_pred,"improved_log_pred.rds")

@@ -12,29 +12,16 @@ library(caret)
 decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
 
 # Make predictions on the test set
-<<<<<<< HEAD
-<<<<<<< HEAD
-decision_tree_pred <- predict(decision_tree, newdata = spotify_test)
-decision_tree_pred
-=======
 decision_predict <- predict(decision_tree, spotify_test)
->>>>>>> 0e21e50a6569289736a5e9f35217103f9bb0c23c
-=======
-decision_predict <- predict(decision_tree, spotify_test)
->>>>>>> 0e21e50a6569289736a5e9f35217103f9bb0c23c
 
 # Calculate regression metrics
 metrics <- confusionMatrix(as.factor(decision_tree_pred), as.factor(spotify_test$track_popularity), positive = "1")
 
 # Print the metrics
 print(metrics)
-
-
-<<<<<<< HEAD
 ```
+
 ```{r}
 saveRDS(decision_tree_pred,"decision_tree_pred.rds")
-=======
->>>>>>> 0e21e50a6569289736a5e9f35217103f9bb0c23c
 ```
 
