@@ -1,24 +1,20 @@
+We load prepared train and test data that is not normalized and the appropriate library.
 ```{r}
 load("../Data/SpotifyTrainTest.Rdata")
-```
-
-#Building Decision Tree Model
-```{r}
 library(C50)
 library(caret)
+```
 
-
-# Build the decision tree
+We build a simple decision tree as follows. As the plot shows, a lot of variables are taken into account.
+```{r}
 decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
+plot(decision_tree)
+```
 
-# Make predictions on the test set
+We predict using above model, and evaluate the prediction using confusion matrix. Our accuarcy comes out to be 0.5804 and kappa to be 0.1608 which is lower than most of our first level models.
+```{r}
 decision_predict <- predict(decision_tree, spotify_test)
-
-# Calculate regression metrics
-metrics <- confusionMatrix(as.factor(decision_tree_pred), as.factor(spotify_test$track_popularity), positive = "1")
-
-# Print the metrics
-print(metrics)
+confusionMatrix(as.factor(decision_tree_pred), as.factor(spotify_test$track_popularity), positive = "1")
 ```
 
 ```{r}
