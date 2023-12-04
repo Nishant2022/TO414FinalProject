@@ -1,24 +1,28 @@
 We load the data that is normalized and split into train and test and the necessary libraries for the ann model.
-```{r}
+```{r ann_load, include=FALSE}
 load("../Data/SpotifyTrainTestNorm.Rdata")
 library(neuralnet)
 library(caret)
 ```
 
-We build the base model and predict with the base model. To use the confusion matrix to evaluate our model, we change the ann prediction into a binary data, using the median as a threshold. The confusion matrix gives us accuracy of 0.6119 and kappa of 0.2237.
-```{r}
+We build the base model and predict with the base model. 
+```{r ann_train, cache=TRUE}
 set.seed(12345)
 ann_model <- neuralnet(track_popularity ~ ., data = spotify_norm_train, lifesign = "full")
-
-ann_prediction <- predict(ann_model, spotify_norm_test)
-summary(ann_prediction)
-ann_pred_binary <- ifelse(ann_prediction > 0.55, 1, 0) # slightly over median = 0.5426
-confusionMatrix(as.factor(ann_pred_binary), as.factor(spotify_norm_test$track_popularity), positive = "1")
 ```
 
-We save the prediction data so that it could be easily accessed in the stacked model. We save the orginal ann prediction that gives us the probablity so that we can have more of an accurate prediction in the stacked model.
-```{r}
-saveRDS(ann_pred_binary, "ann_pred.RDS")
-saveRDS(ann_prediction, "ann_prob.rds")
+To use the confusion matrix to evaluate our model, we change the ann prediction into a binary data, using the median as a threshold. 
+```{r ann_confusion}
+ann_prediction <- predict(ann_model, spotify_norm_test)
+ann_pred_binary <- ifelse(ann_prediction > median(ann_prediction), 1, 0)
+ann_confusion <- confusionMatrix(as.factor(ann_pred_binary), as.factor(spotify_norm_test$track_popularity), positive = "1")
+ann_confusion
+```
+
+The confusion matrix gives us accuracy of `r ann_confusion$overall[1]`and kappa of `r ann_confusion$overall[2]`.
+
+```{r ann_save, include=FALSE}
+saveRDS(ann_pred_binary, "../Data/ann_pred.RDS")
+saveRDS(ann_prediction, "../Data/ann_prob.rds")
 ```
 

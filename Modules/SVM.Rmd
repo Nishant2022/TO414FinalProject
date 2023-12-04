@@ -1,11 +1,12 @@
-We load prepared train and test model matrix data and the appropriate library.
-```{r}
+## SVM
+```{r svm_load, include=FALSE}
 load("../Data/SpotifyTrainTestMM.Rdata")
 library(kernlab)
 ```
 
 Below, we train and test our data using the SVM model. We experiment with multiple different kernels, namely, laplacedot, rbfdot, and vanilladot.
-```{r}
+```{r smv_build, message=FALSE, cache=TRUE}
+set.seed(12345)
 spotify_svm_laplace <- ksvm(track_popularity ~ ., data = spotify_mm_train,
                           kernel = "laplacedot")
 spotify_svm_rbf <- ksvm(track_popularity ~ ., data = spotify_mm_train,
@@ -16,42 +17,47 @@ spotify_svm <- ksvm(track_popularity ~ ., data = spotify_mm_train,
 
 We then make predictions for track popularity using the laplacedot kernel for SVM.
 We examined the summary data (i.e. mean, median, etc) to determine a threshold with which to label a track as popular. We decided use the median of the predicted values to determine the cut-off threshold for popularity. 
-```{r}
+```{r svm_laplace prediction}
 spotify_svm_pred_laplace <- predict(spotify_svm_laplace, spotify_mm_test)
 summary(spotify_svm_pred_laplace)
 ```
 
-For the laplacedot kernel, tracks with popularity scores greater than 0.7468 are considered popular whereas tracks with popularity scores below this threshold are not popular.
+For the laplacedot kernel, tracks with popularity scores greater than `r median(spotify_svm_pred_laplace)` are considered popular whereas tracks with popularity scores below this threshold are not popular.
 
 We experimented with this threshold to gauge the changes in kappa and accuracy. As we increase this threshold, we increase the magnitude of false negatives; that is, a higher threshold (greater than the median) classifies fewer songs as popular when they actually are popular. With this in mind, it may make sense to increase this threshold, as it makes our predictions for popularity more strict, though it also yields lower kappa values which is not ideal. So, we decided to use a threshold equivalent to the median of the predicted SVM values for the laplacedot. 
 
 We applied this same ideology to the rbfdot and vanilladot kernels.
-```{r}
-spotify_svm_pred_laplace_binary <- ifelse(spotify_svm_pred_laplace >= 0.7468, 1, 0)
+```{r svm_laplace_confusion}
+spotify_svm_pred_laplace_binary <- ifelse(spotify_svm_pred_laplace >= median(spotify_svm_pred_laplace), 1, 0)
 confusionMatrix(as.factor(spotify_svm_pred_laplace_binary), as.factor(spotify_mm_test$track_popularity), positive = "1")
 ```
 
 The following code predicts track popularity using the SVM with rbfdot kernel.
-```{r}
+```{r svm_rbf}
 spotify_svm_pred_rbf <- predict(spotify_svm_rbf, spotify_mm_test)
 summary(spotify_svm_pred_rbf)
 ```
-The selected median value for the threshold is 0.6717.
-```{r}
-spotify_svm_pred_rbf_binary <- ifelse(spotify_svm_pred_rbf >= 0.6717, 1, 0)
+The selected median value for the threshold is `r median(spotify_svm_pred_rbf)`.
+```{r svm_rbf_confusion}
+spotify_svm_pred_rbf_binary <- ifelse(spotify_svm_pred_rbf >= median(spotify_svm_pred_rbf), 1, 0)
 confusionMatrix(as.factor(spotify_svm_pred_rbf_binary), as.factor(spotify_mm_test$track_popularity))
 ```
 
 The following code predicts track popularity using the SVM with vanilladot kernel.
-```{r}
-spotify_svm_pred <- predict(spotify_svm, spotify_mm_test)
-summary(spotify_svm_pred)
+```{r svm_vanilla}
+spotify_svm_pred_vanilla <- predict(spotify_svm, spotify_mm_test)
+summary(spotify_svm_pred_vanilla)
 ```
 
-The selected median value for the threshold is 0.94976
-```{r}
-spotify_svm_pred_binary <- ifelse(spotify_svm_pred >= 0.94976, 1, 0)
-confusionMatrix(as.factor(spotify_svm_pred_binary), as.factor(spotify_mm_test$track_popularity))
+The selected median value for the threshold is `r median(spotify_svm_pred_vanilla)`
+```{r svm_vanilla_confusion}
+spotify_svm_pred_vanilla_binary <- ifelse(spotify_svm_pred_vanilla >= median(spotify_svm_pred_vanilla), 1, 0)
+confusionMatrix(as.factor(spotify_svm_pred_vanilla_binary), as.factor(spotify_mm_test$track_popularity))
 ```
+From the above confusion matrices, we can see that the rbf kernel works the best with the spotify data as it has the highest kappa value.
+We will use it in the combined model.
 
+```{r svm_save, include=FALSE}
+saveRDS(spotify_svm_pred_rbf, file = "../Data/svm_prediction.rds")
+```
 

@@ -1,19 +1,23 @@
-# Data Cleaning
+## Data Cleaning
 
-```{r}
+### Clean Data
+```{r data_cleaning lib, include=FALSE}
 library(janitor)
 ```
 
+First we have to read our data.
 ```{r read_data}
 spotify_data <- read.csv("../spotify_songs.csv", stringsAsFactors = T)
 ```
 
+We then remove all duplicate songs. 
 ```{r remove_duplicates}
 spotify_data <- spotify_data[!duplicated(spotify_data$track_name), ]
 summary(spotify_data)
 ```
 
-```{r}
+We then remove all unnecessary variables such as IDs and names.
+```{r remove_variables}
 spotify_data$track_id <- NULL
 spotify_data$track_album_id <- NULL
 spotify_data$playlist_id <- NULL
@@ -23,25 +27,39 @@ spotify_data$track_artist <- NULL
 spotify_data$playlist_name <- NULL
 spotify_data$track_album_name <- NULL
 spotify_data$playlist_subgenre <- NULL # The genre has more general info
+```
+
+Next, we change the key variable to a factor.
+```{r factorize_key}
 spotify_data$key <- as.factor(spotify_data$key)
 summary(spotify_data)
 str(spotify_data)
-# median is 43 for track popularity
 ```
-```{r}
+
+We change the popularity field to be a binary variable.
+Songs that had popularity above the median are 1 and songs below are 0.
+By choosing the median, we ensure an almost 50/50 split in the data in terms of popularity.
+```{r binary_popularity}
+# median is 43 for track popularity
 spotify_data$track_popularity <- ifelse(spotify_data$track_popularity >= 43,1,0)
 str(spotify_data$track_popularity)
 summary(spotify_data)
 ```
 
 
-```{r}
+### Model Matrix
+
+We produce a model matrix to get dummy variables and clean the names of variables.
+```{r model_matrix}
 spotifymm <- as.data.frame(model.matrix(~ . -1, spotify_data))
 spotifymm <- clean_names(spotifymm)
 str(spotifymm)
 ```
 
-```{r}
+### Normalize
+
+We then normalize the data.
+```{r normalize}
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x))) 
 }
@@ -50,6 +68,6 @@ spotify_norm <- as.data.frame(lapply(spotifymm, normalize))
 summary(spotify_norm)
 ```
 
-```{r}
+```{r save_clean_data, include=FALSE}
 save(spotify_data, spotifymm, spotify_norm, file = "../Data/CleanedData.Rdata")
 ```
