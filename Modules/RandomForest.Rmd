@@ -48,7 +48,6 @@ confusionMatrix(tuned_prediction, as.factor(spotify_test$track_popularity))
 The confusion matrix shows that our tuned matrix is very slightly better than the base model but it is mostly the same.
 
 ```{r rf_save, include=FALSE}
-saveRDS(tuned_rf, "rf_tuned.rds")
 saveRDS(tuned_prediction, "../Data/rf_tuned_prediction.rds")
 ```
 

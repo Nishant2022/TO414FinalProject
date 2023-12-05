@@ -43,7 +43,8 @@ tree_test <- spotify_preds[-tree_train_rows,]
 Next we make the combined model decision tree.
 ```{r combined_tree, warning=FALSE}
 set.seed(12345)
-tree_model <- C5.0(true ~ ., data = tree_train)
+cost <- matrix(c(0, 2, 2, 0), nrow = 2)
+tree_model <- C5.0(true ~ ., data = tree_train, cost = cost)
 ```
 
 ```{r combined_confusion}
