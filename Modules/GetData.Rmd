@@ -1,6 +1,9 @@
 ## Data Cleaning
 
 ### Clean Data
+
+Cleaning our dataset is crucial for obtaining higher accuracies and kappas by removing unused variables or refactoring existing ones.
+
 ```{r data_cleaning lib, include=FALSE}
 library(janitor)
 ```
@@ -49,7 +52,8 @@ summary(spotify_data)
 
 ### Model Matrix
 
-We produce a model matrix to get dummy variables and clean the names of variables.
+We produce a model matrix to get dummy variables and clean the names of variables. This will help when training our models, as it will remove any issues with column names that could cause our models to fail or produce exceptions in the training and prediction stages.
+
 ```{r model_matrix}
 spotifymm <- as.data.frame(model.matrix(~ . -1, spotify_data))
 spotifymm <- clean_names(spotifymm)
@@ -58,7 +62,8 @@ str(spotifymm)
 
 ### Normalize
 
-We then normalize the data.
+We then normalize the data. This will be particularly useful for models like KNN which require normalized data to train.
+
 ```{r normalize}
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x))) 

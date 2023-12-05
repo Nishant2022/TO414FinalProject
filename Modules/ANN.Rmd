@@ -7,25 +7,32 @@ ann_model <- readRDS("../Data/ann_model.rds")
 
 ## ANN
 
-We build the base model and predict with the base model.
-We trained with two hidden layers, the first with 10 node and the second with six.
-We also increased the step max so that the model could converge.
-The model converged after about 1.26 days of training and 8 million iterations.
+Artificial Neural Networks (ANNs) are models that conduct the training process by using a set of specified hidden nodes which link with the given input nodes and the final output node. The input nodes take in the training data and initiate ANN's training process which requires the ANN to learn weights that connect the input nodes to the hidden nodes as well as the hidden nodes to the output node. The output node is a singular prediction of the classification or value predicted by the model for the given inputs.
+
+The goal of ANNs is to learn these edge weights to find relationships present in the incoming dataset. In this problem, our goal is to have the ANN model understand the relationships between all variables in the dataset through weights in order to predict track popularity for a song with certain specified attributes. 
+
+The quickest way to train an ANN on this dataset is to simply use a small number of hidden layers, as it would require the ANN to learn fewer weights between variables. However, in order to obtain higher accuracy with our model, we want to identify stronger relationships between the input, hidden, and output nodes; thus, we settled on a more complex configuration of hidden nodes, the first hidden layer containing 10 hidden nodes and the second hidden layer containing 6.
+
+We then build the base model with these parameters and predict track popularity with the base model. Notice that we increase the step max to 1e9 instead of the default parameter. The reason for this was to increase the maximum training steps for the ANN in order to be more confident that the model will converge.
+
+Indeed, the ANN model converged after about 1.26 days of training and 8 million iterations.
 ```{r ann_train, eval=FALSE}
 set.seed(12345)
 ann_model <- neuralnet(track_popularity ~ ., data = spotify_norm_train, hidden = c(10, 6), stepmax = 1e9, lifesign = "full")
 ```
 
-To use the confusion matrix to evaluate our model, we change the ann prediction into a binary data, using the median as a threshold. 
+To use the confusion matrix to evaluate our model, we change the ANN prediction into a binary data, using the median as a threshold. 
 ```{r ann_confusion}
 ann_prediction <- predict(ann_model, spotify_norm_test)
 ann_pred_binary <- ifelse(ann_prediction > median(ann_prediction), 1, 0)
 ann_confusion <- confusionMatrix(as.factor(ann_pred_binary), as.factor(spotify_norm_test$track_popularity), positive = "1")
 ann_confusion
 ```
+The median of the data was `r median(ann_prediction)`. 
 
-The confusion matrix gives us accuracy of `r ann_confusion$overall[1]`and kappa of `r ann_confusion$overall[2]`.
-This accuracy and kappa is not great.
+Using this threshold, we see that the confusion matrix gives us accuracy of `r ann_confusion$overall[1]`and kappa of `r ann_confusion$overall[2]`.
+
+This accuracy and kappa are not ideal. We believe the reason for this may be that our configuration of hidden nodes and layers was not comprehensive enough to solidify strong and appropriate relationships (i.e. weights) between variables in our dataset. In the future, we plan to run more ANN models with more layers and different numbers of hidden nodes (ex. c(8, 6, 2, 4)). Due to runtime constraints, we were unable to retrieve model accuracies and kappas for more complex models, so we will use the above ANN in our stacked model.
 
 ```{r ann_save, include=FALSE}
 saveRDS(ann_pred_binary, "../Data/ann_pred.RDS")
