@@ -1,10 +1,12 @@
+## Make Train and Test Split
 
-```{r}
+```{r load_train_test, include=FALSE}
 load("../Data/CleanedData.Rdata")
 load("../Data/CleanedData.Rdata")
 ```
 
-```{r}
+We will make our initial test and train split by partitioning our data equally.
+```{r train_test}
 train_percentage <- 0.5
 set.seed(12345)
 train_rows <- sample(1:nrow(spotify_data), train_percentage * nrow(spotify_data))
@@ -24,7 +26,7 @@ spotify_norm_test_x <- spotify_norm_test[, -match("track_popularity", names(spot
 spotify_norm_test_y <- spotify_norm_test[, match("track_popularity", names(spotify_norm_test))]
 ```
 
-```{r}
+```{r save_train_test, include=FALSE}
 save(spotify_test, spotify_train, file = "../Data/SpotifyTrainTest.Rdata")
 save(spotify_mm_test, spotify_mm_train, file = "../Data/SpotifyTrainTestMM.Rdata")
 save(spotify_norm_test, spotify_norm_train, file = "../Data/SpotifyTrainTestNorm.Rdata")

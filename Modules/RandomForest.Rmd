@@ -1,35 +1,54 @@
-```{r}
-load("../Data/CleanedData.RData")
-```
-
-```{r}
+## Random Forest
+```{r rf_load, include=FALSE}
+load("../Data/SpotifyTrainTest.RData")
 library(randomForest)
 library(caret)
 ```
 
-```{r}
+We run the random forest algorithm without any model tuning.
+```{r rf_build_base, cache=TRUE}
 set.seed(12345)
-rf <- randomForest(track_popularity ~ ., data = spotify_data)
+rf <- randomForest(track_popularity ~ ., data = spotify_train)
+rf_base_prediction <- predict(rf, spotify_test)
 rf
+summary(rf_base_prediction)
 ```
 
-```{r}
+The base random forest chose a regression tree model.
+That means our prediction is not binary.
+So we first converted our prediction to a binary variable based on the median prediction and then analyzed the confusion matrix.
+```{r rf_base prediction}
+rf_base_prediction <- ifelse(0.5207 <= rf_base_prediction, 1, 0)
+confusionMatrix(as.factor(rf_base_prediction), as.factor(spotify_test$track_popularity))
+```
+We can see that our accuracy is a bit low, with an accuracy of 0.615, and our kappa is 0.23.
+Our model has some predictive power but not much.
+
+We wanted to improve the model so we set up the tuning parameters for a tuned random forest model.
+```{r rf tuning parameters}
 ctrl <- trainControl(method = "cv", number = 10,
                      selectionFunction = "oneSE")
 grid_rf <- expand.grid(.mtry = c(2, 4, 8, 16))
 ```
 
-```{r}
+We then trained another random forest model, this time with the tuning.
+We chose to optimize kappa.
+```{r tuned rf, cache=TRUE}
 set.seed(12345)
-spotify_data$track_popularity <- as.factor(spotify_data$track_popularity)
-summary(spotify_data$track_popularity)
-m_rf <- train(track_popularity ~ ., data = spotify_data, method = "rf",
+tuned_rf <- train(as.factor(track_popularity) ~ ., data = spotify_train, method = "rf",
               metric = "Kappa", trControl = ctrl,
               tuneGrid = grid_rf)
-m_rf
 ```
 
-```{r}
-saveRDS(m_rf, "rf_basemodel.rds")
+After, we were able to make a prediction using the tuned random forest model and make a confusion matrix.
+```{r tuned rf confusion}
+tuned_prediction <- predict(tuned_rf, spotify_test)
+confusionMatrix(tuned_prediction, as.factor(spotify_test$track_popularity))
+```
+The confusion matrix shows that our tuned matrix is very slightly better than the base model but it is mostly the same.
+
+```{r rf_save, include=FALSE}
+saveRDS(tuned_rf, "rf_tuned.rds")
+saveRDS(tuned_prediction, "../Data/rf_tuned_prediction.rds")
 ```
 

@@ -1,46 +1,55 @@
-# Load prepared train and test data
-```{r}
+## Logistic Regression
+
+```{r lr_load, include=FALSE}
 load("../Data/SpotifyTrainTest.Rdata")
+library(caret)
 ```
 
-# Build model
-```{r}
+### Base Model
+
+First, we build our base model by simply putting all variables into account.
+```{r lr_basemodel}
 logistic_basemodel <- glm(track_popularity ~ ., data =spotify_train)
 summary(logistic_basemodel)
 ```
-# Predict
-```{r}
+
+Using the base model, we predict the track_popularity. The prediction comes as a probability, so using the median as the threshold, we change the prediction into binary so that we can evaluate the model using confusion matrix.
+```{r lr_prediciton}
 logistic_base_prediction <- predict(logistic_basemodel, spotify_test, type = "response")
 summary(logistic_base_prediction)
 logistic_base_pred <- ifelse(logistic_base_prediction >0.53,1,0)
 summary(logistic_base_pred)
 ```
 
-# Evaluate
-```{r}
-library(caret)
+We then evaluate the data with said confusion matrix. Because we choose the median as a threshold, the numbers of false negative and false positive are very close to each other. We do want false negative to be a little lower in the business aspect, but we will consider such in the stacked model. As a result, we get an accuracy of 0.6115 and kappa of 0.223.
+```{r lr_base_confusion}
 confusionMatrix(as.factor(logistic_base_pred), as.factor(spotify_test$track_popularity))
 ```
 
-```{r}
-# if we only used significant 
+### Improved Model
+
+We attempted to improve our model by only taking statistically significant variables in the base model into account.
+```{r lr_improved}
 improved_logisitic = glm(track_popularity ~ playlist_genre*danceability*energy*loudness + playlist_genre*acousticness*instrumentalness*tempo*duration_ms, data = spotify_train)
-summary(improved_logisitic)
+```
 
-# predict
-logistic_improved_prediction <- predict(improved_logisitic, spotify_test, type = "response")
-summary(logistic_improved_prediction) # prediction negative?
-logistic_improved_pred <- ifelse(logistic_improved_prediction >0.5251,1,0) # median
+We then predict the test data using the improved logistic regression model.
+```{r lr_improved_prediction}
+logistic_improved_prob <- predict(improved_logisitic, spotify_test, type = "response")
+summary(logistic_improved_prob) # prediction negative?
+logistic_improved_pred <- ifelse(logistic_improved_prob >0.5251,1,0) # median
 summary(logistic_improved_pred)
+```
 
-# evaluate
-library(caret)
+After going through the same process as the base model, we found the this model was in fact an improvement from the base model as the accuracy and the kappa value are both higher than the base model(0.6115 -> 0.6171 / 0.223 -> 0.2343).
+```{r lr_improved_evaluate}
 confusionMatrix(as.factor(logistic_improved_pred), as.factor(spotify_test$track_popularity))
 ```
 
-```{r}
-saveRDS(logistic_base_pred,"logistic_pred.rds")
-saveRDS(logistic_improved_pred,"improved_log_pred.rds")
-saveRDS(log_prob_pred,"log_prob.rds")
+Therefore, we are going to use the improved model in the stacked model to maximized accuracy and kappa.
+
+```{r lr_save, include=FALSE}
+saveRDS(logistic_improved_prob,"../Data/improved_log_prob.rds")
+saveRDS(logistic_improved_pred,"../Data/improved_log_pred.rds")
 ```
 

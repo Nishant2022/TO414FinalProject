@@ -1,0 +1,76 @@
+### KNN
+```{r knn_load, include=FALSE}
+load("../Data/SpotifyTrainTestNormXY.Rdata")
+library(class)
+library(caret)
+```
+
+We use the train function that is used in model tuning to find best possible k value between 1 and 150. As a result, we get k = 136.
+```{r knn_tuning, eval=FALSE}
+ctrl <- trainControl(method = "cv", number = 10)
+
+knn_train <- train(spotify_norm_train_x, as.factor(spotify_norm_train_y), method = "knn", tuneGrid = data.frame(k = seq(1, 150, by = 5)), trControl = ctrl)
+best_k <- knn_train$bestTune$k
+```
+
+Although we calculated the best k, we tested different numbers of k in case there was a case with higher accuracy and kappa. As we predicted, out of the value we tested, the accuracy and the kappa was the highest when k = 136 when we evaluated our models using confusion matrix.
+```{r knn_models, cache=TRUE}
+knn.m_5 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 5, prob = T)
+knn.m_7 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 7, prob = T)
+knn.m_9 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 9, prob = T)
+knn.m_100 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 100, prob = T)
+knn.m_best_k <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 136, prob = T)
+knn.m_150 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 150, prob = T)
+knn.m_200 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 200, prob = T)
+```
+
+#### Confusion Matrices {.tabset}
+
+##### K=5 {-}
+```{r k5_confusion}
+confusionMatrix(as.factor(knn.m_5), as.factor(spotify_norm_test_y)) # kappa = 0.133
+```
+
+##### K=7 {-}
+```{r k7_confusion}
+confusionMatrix(as.factor(knn.m_7), as.factor(spotify_norm_test_y)) # kappa = 0.1418
+```
+
+##### K=9 {-}
+```{r k9_confusion}
+confusionMatrix(as.factor(knn.m_9), as.factor(spotify_norm_test_y)) # kappa = 0.1439
+```
+
+##### K=100 {-}
+```{r k100_confusion}
+confusionMatrix(as.factor(knn.m_100), as.factor(spotify_norm_test_y)) # kappa = 0.1719
+```
+
+##### K=136 {.active -}
+```{r k136_confusion}
+confusionMatrix(as.factor(knn.m_best_k), as.factor(spotify_norm_test_y)) # kappa = 0.1814 accuracy 0.5887
+```
+
+##### K=150 {-}
+```{r k150_confusion}
+confusionMatrix(as.factor(knn.m_150), as.factor(spotify_norm_test_y)) # kappa = 0.1758
+```
+
+##### K=200 {-}
+```{r k200_confusion}
+confusionMatrix(as.factor(knn.m_200), as.factor(spotify_norm_test_y)) # kappa = 0.1756
+```
+
+##### {-}
+
+We obtain the probability values of knn prediction instead of the binary values so that we can have more of an accurate prediction in the stacked model.
+```{r knn_prob}
+knn_prediction <- knn.m_best_k
+knn_prob <- attr(knn_prediction, which = "prob")
+```
+
+```{r include=FALSE}
+saveRDS(knn_prediction, "../Data/knn_pred.rds")
+saveRDS(knn_prob, "../Data/knn_prob.rds")
+```
+

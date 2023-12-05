@@ -1,43 +1,55 @@
-```{r}
-log_pred <- readRDS("improved_log_pred.rds")
-knn_pred <- readRDS("knn_prob_pred.rds")
-ann_pred <- readRDS("ann_prob.rds")
-rf_pred <- readRDS("rf_pred.rds") # i don't know how to access specific tree
-svm_pred <- readRDS("svm_pred.rds")
-decision_tree_pred <- readRDS("decision_tree_pred.rds")
+```{r stacked_load, include=FALSE}
+log_prob <- readRDS("../Data/improved_log_prob.rds")
+knn_pred <- readRDS("../Data/knn_pred.rds")
+knn_prob <- readRDS("../Data/knn_prob.rds")
+ann_pred <- readRDS("../Data/ann_prob.rds")
+rf_pred <- readRDS("../Data/rf_tuned_prediction.rds")
+svm_pred <- readRDS("../Data/svm_prediction.rds")
+decision_tree_pred <- readRDS("../Data/decision_tree_pred.rds")
 load("../Data/SpotifyTrainTest.Rdata")
+library(C50)
 ```
 
+## Combine Data
 
-```{r}
+We are going to take all the data from the different individual models and combine them to make a new training set.
+```{r combined_data}
 spotify_preds <- data.frame(
-  log = log_pred,
-  knn = knn_pred,
+  log = log_prob,
+  knn_pred = knn_pred,
+  knn_prob = knn_prob,
   ann = ann_pred,
   svm = svm_pred,
   decision_tree = decision_tree_pred,
   rf = rf_pred,
-  true = spotify_Test$track_popularity
+  true = as.factor(spotify_test$track_popularity)
 )
-
 ```
 
-```{r}
-set.seed(12345)
 
-tree_train_rows <-- sample(1:nrow(spotify_preds), 0.7*nrow(spotify_preds))
+## Train and Test Sets
+
+We are going to make a train and test split for the new combined data set, with 70\% of the data going to the train set.
+```{r combined_split}
+set.seed(12345)
+combined_split <- 0.7
+
+tree_train_rows <- sample(1:nrow(spotify_preds), combined_split*nrow(spotify_preds))
 tree_train <- spotify_preds[tree_train_rows,]
 tree_test <- spotify_preds[-tree_train_rows,]
+```
 
-error_cost <- matrix(c(0,1,5,0), nrow = 2)
-# we are going to underpredict ones, so we need to force it to make it make more ones 
-# bc if we don't we will have more false negative
-# will adjust this as follow
+## Combined Tree
+Next we make the combined model decision tree.
+```{r combined_tree, warning=FALSE}
+set.seed(12345)
+tree_model <- C5.0(true ~ ., data = tree_train)
+```
 
-tree_model <- C5.0(as.factor(true) ~ ., data = spotify_train, costs = error_cost)
+```{r combined_confusion}
 tree_predict <- predict(tree_model, tree_test)
 
 print(confusionMatrix(as.factor(tree_predict), as.factor(tree_test$true), positive = "1"))
-plot(tree_model)
+summary(tree_model)
 ```
 

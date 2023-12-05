@@ -3,15 +3,44 @@ title: "Spotify Analysis"
 author: Kyle Cohen, Declan Coyle, Nishant Dash, Evan Gresens, Angelina Ilijevski,
   Gahyun (Grace) Yoon
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    theme: readable
+    highlight: tango
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, child="Modules/GetData.Rmd"}
+# Preparation
+
+```{r GetData, child="Modules/GetData.Rmd"}
 ```
 
-```{r, child="Modules/TrainTest.Rmd"}
+```{r TrainTest, child="Modules/TrainTest.Rmd"}
+```
+
+# Initial Models
+
+```{r LogisticRegression, child="Modules/LogisticRegression.Rmd"}
+```
+
+```{r KNN, child="Modules/KNN.Rmd"}
+```
+
+```{r SVM, child="Modules/SVM.Rmd"}
+```
+
+```{r DecisionTree, child="Modules/DecisionTree.Rmd"}
+```
+
+```{r RandomForest, child="Modules/RandomForest.Rmd"}
+```
+
+# Combined Model
+
+```{r CombinedModel, child="Modules/stacked_model.Rmd"}
 ```

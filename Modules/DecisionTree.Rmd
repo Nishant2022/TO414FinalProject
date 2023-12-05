@@ -1,27 +1,23 @@
-```{r}
+## Decision Tree
+```{r dt_load, include=FALSE}
 load("../Data/SpotifyTrainTest.Rdata")
-```
-
-#Building Decision Tree Model
-```{r}
 library(C50)
 library(caret)
-
-
-# Build the decision tree
-decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
-
-# Make predictions on the test set
-decision_predict <- predict(decision_tree, spotify_test)
-
-# Calculate regression metrics
-metrics <- confusionMatrix(as.factor(decision_tree_pred), as.factor(spotify_test$track_popularity), positive = "1")
-
-# Print the metrics
-print(metrics)
 ```
 
-```{r}
-saveRDS(decision_tree_pred,"decision_tree_pred.rds")
+We build a simple decision tree as follows. As the plot shows, a lot of variables are taken into account.
+```{r dt_build, cache=TRUE}
+decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
+summary(decision_tree)
+```
+
+We predict using above model, and evaluate the prediction using confusion matrix. Our accuracy comes out to be 0.5804 and kappa to be 0.1608 which is lower than most of our first level models.
+```{r dt_confusion}
+decision_predict <- predict(decision_tree, spotify_test)
+confusionMatrix(as.factor(decision_predict), as.factor(spotify_test$track_popularity), positive = "1")
+```
+
+```{r dt_save, include=FALSE}
+saveRDS(decision_predict,"../Data/decision_tree_pred.rds")
 ```
 
