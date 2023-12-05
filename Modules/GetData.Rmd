@@ -45,7 +45,7 @@ By choosing the median, we ensure an almost 50/50 split in the data in terms of 
 ```{r binary_popularity}
 # median is 43 for track popularity
 spotify_data$track_popularity <- ifelse(spotify_data$track_popularity >= 43,1,0)
-str(spotify_data$track_popularity)
+summary(spotify_data$track_popularity)
 summary(spotify_data)
 ```
 

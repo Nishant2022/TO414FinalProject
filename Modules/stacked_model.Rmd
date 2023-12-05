@@ -52,8 +52,8 @@ Below, we construct a confusion matrix to obtain the accuracy score, kappa value
 ```{r combined_confusion}
 tree_predict <- predict(tree_model, tree_test)
 
-print(confusionMatrix(as.factor(tree_predict), as.factor(tree_test$true), positive = "1"))
 summary(tree_model)
+print(confusionMatrix(as.factor(tree_predict), as.factor(tree_test$true), positive = "1"))
 ```
 
 The accuracy is 0.6197 and the final kappa is 0.2397. Using this information, we see that the final comprehensive model was able to perform slightly better than other individual models, like the decision tree. Overall, we notice that the stacked model was able to perform more accurately and yield better predictive performance, as it combined predictions from all models into a single dataframe for training purposes.

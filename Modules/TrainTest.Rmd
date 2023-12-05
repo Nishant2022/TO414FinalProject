@@ -1,4 +1,4 @@
-## Make Train and Test Split
+## Train and Test Split
 
 ```{r load_train_test, include=FALSE}
 load("../Data/CleanedData.Rdata")

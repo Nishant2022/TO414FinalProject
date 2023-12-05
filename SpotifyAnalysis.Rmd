@@ -18,6 +18,19 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+# Business Problem
+What makes a successful song in terms of popularity?
+Popular songs with more streams mean more \$ for artists and record labels.
+In the case of Spotify, the amount you can expect to receive lies between \$0.003 to \$0.005 per stream, or \$3-5 dollars per thousand streams.
+What type of songs should artists and labels make to maximize their financial potential, and what songs should they choose to promote? 
+
+For each dollar of revenue earned on Spotify, 58.5 cents go to the owner of a song’s sound recording (usually a record label), Spotify keeps 29.38 cents, 6.12 cents go to whoever owns publishing rights (usually the songwriter) and 6 cents goes to whoever owns the mechanical rights (usually the songwriter), according to 2016 research by Manatt, Phelps & Phillips, a professional services firm.
+
+With our work, we are hoping to help focus artist's efforts when it comes to producing and promoting certain songs.
+We hope that with our model, an artist will be able to determine if one of their songs will be popular and then promote that song more than others.
+This could lead to an artist only promoting their most popular songs, and not wasting their budget on songs that will not be popular and therefore not bring them as much money.
+
 # Preparation
 
 ```{r GetData, child="Modules/GetData.Rmd"}
@@ -50,3 +63,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r CombinedModel, child="Modules/stacked_model.Rmd"}
 ```
+
+# Conclusion
+
+While our model does not have the best accuracy, with approximately 62\%, it is still better than blindly guessing that a song is popular or not.
+The model is also partially generalizable with a kappa of 0.2397.
+
+Throughout our testing, we struggled to get kappas any higher.
+This might be because of the nature of the data.
+Music tastes are very subjective and therefore likely made it hard to predict which songs would be popular.
+
+While an artist may not be able to solely rely on our model to determine which songs will be popular and therefore which songs to promote, our model can be used as a tool in the decision process.
+
+Record companies can also use this model to try and predict which artists to sign in the future.
+They can quickly analyze all songs of a given artist and determine if their style is popular.
+
+In addition this model can be used to decide whether to release a song as a single or to include it in an album.
+Typically, if a song is going to be popular, artists will release it as a single and their other songs will be in an album.
+
+Overall though, when used in the music industry, our model can help make predictions about which songs will be popular, helping to increase profits of both artists and record labels.
