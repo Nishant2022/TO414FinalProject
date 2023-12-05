@@ -5,7 +5,8 @@ load("../Data/CleanedData.Rdata")
 load("../Data/CleanedData.Rdata")
 ```
 
-We will make our initial test and train split by partitioning our data equally.
+We will make our initial test and train split by partitioning our data equally (50% for training, 50% for testing). This way, we have enough data for training purposes and sufficient data for testing our models; using less of the dataset to train prevents overfitting of our models that could result from training models with a overly high proportion of data from the dataset.
+
 ```{r train_test}
 train_percentage <- 0.5
 set.seed(12345)

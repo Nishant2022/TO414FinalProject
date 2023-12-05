@@ -5,7 +5,9 @@ library(randomForest)
 library(caret)
 ```
 
-We run the random forest algorithm without any model tuning.
+Building off from our construction of decision trees, random forests work by creating multiple decision trees to use an ensemble approach for making a final model prediction. 
+
+Here, we run the random forest algorithm without any model tuning.
 ```{r rf_build_base, cache=TRUE}
 set.seed(12345)
 rf <- randomForest(track_popularity ~ ., data = spotify_train)
@@ -45,7 +47,7 @@ After, we were able to make a prediction using the tuned random forest model and
 tuned_prediction <- predict(tuned_rf, spotify_test)
 confusionMatrix(tuned_prediction, as.factor(spotify_test$track_popularity))
 ```
-The confusion matrix shows that our tuned matrix is very slightly better than the base model but it is mostly the same.
+The confusion matrix shows that our tuned matrix is very slightly better than the base model but it is mostly the same. Thus, we will use this tuned prediction in the stacked model.
 
 ```{r rf_save, include=FALSE}
 saveRDS(tuned_prediction, "../Data/rf_tuned_prediction.rds")

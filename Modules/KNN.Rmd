@@ -4,6 +4,7 @@ load("../Data/SpotifyTrainTestNormXY.Rdata")
 library(class)
 library(caret)
 ```
+K-Nearest Neighbors models work by finding the k nearest neighbors present in the dataset to an input data point and using a majority voting algorithm to determine the final classification of that point.
 
 We use the train function that is used in model tuning to find best possible k value between 1 and 150. As a result, we get k = 136.
 ```{r knn_tuning, eval=FALSE}
@@ -13,7 +14,8 @@ knn_train <- train(spotify_norm_train_x, as.factor(spotify_norm_train_y), method
 best_k <- knn_train$bestTune$k
 ```
 
-Although we calculated the best k, we tested different numbers of k in case there was a case with higher accuracy and kappa. As we predicted, out of the value we tested, the accuracy and the kappa was the highest when k = 136 when we evaluated our models using confusion matrix.
+Although we calculated the best k, we tested different numbers of k in case there was one with a higher accuracy and kappa. 
+
 ```{r knn_models, cache=TRUE}
 knn.m_5 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 5, prob = T)
 knn.m_7 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 7, prob = T)
@@ -23,6 +25,9 @@ knn.m_best_k <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_trai
 knn.m_150 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 150, prob = T)
 knn.m_200 <- knn(spotify_norm_train_x, spotify_norm_test_x, spotify_norm_train_y, k = 200, prob = T)
 ```
+
+As we predicted, out of the values (i.e. 5, 7, 9, etc) we tested, the accuracy and the kappa was the highest when k = 136 when we evaluated our models using the confusion matrix (which can be found in the next section). This is because the hyperparameter tuning step above already accounted for models with the above manually selected k values and evidently identified that they did not yield favorable model performance.
+
 
 #### Confusion Matrices {.tabset}
 
@@ -63,11 +68,18 @@ confusionMatrix(as.factor(knn.m_200), as.factor(spotify_norm_test_y)) # kappa = 
 
 ##### {-}
 
-We obtain the probability values of knn prediction instead of the binary values so that we can have more of an accurate prediction in the stacked model.
+We obtain the probability values of the KNN prediction instead of the binary values so that we can have more of an accurate prediction in the stacked model.
+
+We believe that we could have obtained higher accuracies and kappa values for KNN using fewer features; this is because as the number of features increases, more data is needed to strengthen the classification of the given input data point, thus adhering to the curse of dimensionality in KNN model training. 
+
+In the future, we would prefer to identify the most meaningful features associated with track popularity and possibly gather more song data as the number of songs available on Spotify increases.
+
 ```{r knn_prob}
 knn_prediction <- knn.m_best_k
 knn_prob <- attr(knn_prediction, which = "prob")
 ```
+
+For now, we will use the probability predictions for KNN with k = 136 in our stacked model as its overall performance mirrors those of other models and its imperfect predictability may  have just been a result of using insufficient data in the training set.
 
 ```{r include=FALSE}
 saveRDS(knn_prediction, "../Data/knn_pred.rds")

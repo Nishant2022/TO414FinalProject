@@ -40,17 +40,23 @@ tree_test <- spotify_preds[-tree_train_rows,]
 ```
 
 ## Combined Tree
-Next we make the combined model decision tree.
+Next we make the combined model decision tree with a specified cost matrix with values c(0, 2, 2, 0). This will allow us to focus mainly on the false positives and false negatives of our final predictions, assigning equal cost weights to each of these. This will further help us determine the penalty assigned to having more false negatives than false positives and vice versa.
+
 ```{r combined_tree, warning=FALSE}
 set.seed(12345)
 cost <- matrix(c(0, 2, 2, 0), nrow = 2)
 tree_model <- C5.0(true ~ ., data = tree_train, cost = cost)
 ```
 
+Below, we construct a confusion matrix to obtain the accuracy score, kappa value, and distribution of false negatives and false positives for this stacked model.
 ```{r combined_confusion}
 tree_predict <- predict(tree_model, tree_test)
 
 print(confusionMatrix(as.factor(tree_predict), as.factor(tree_test$true), positive = "1"))
 summary(tree_model)
 ```
+
+The accuracy is 0.6197 and the final kappa is 0.2397. Using this information, we see that the final comprehensive model was able to perform slightly better than other individual models, like the decision tree. Overall, we notice that the stacked model was able to perform more accurately and yield better predictive performance, as it combined predictions from all models into a single dataframe for training purposes.
+
+The accuracy and kappa above are the final metrics for the prediction of track popularity given Spotify songs with attributes such as danceability, energy, accousticness, and more.
 

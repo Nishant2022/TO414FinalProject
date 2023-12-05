@@ -5,17 +5,23 @@ library(C50)
 library(caret)
 ```
 
-We build a simple decision tree as follows. As the plot shows, a lot of variables are taken into account.
+A decision tree is a supervised machine learning model that follows a tree-like structure (including root nodes, leaf nodes, and branches) to make predictions according to answers selected for on previous sets of questions. More specifically, decision trees have splitting nodes which allow the model to make a decision about which branch it should select to gain the most information about a given input. Once the model reaches a leaf node, it returns the prediction for the given input. The training process for decision trees is responsible for creating this tree structure by finding relationships between splitting nodes and related child nodes.
+
+Here, we build a simple decision tree using our training dataset. As the plot shows, all variables that had not been filtered out of the original dataset are taken into account. 
 ```{r dt_build, cache=TRUE}
 decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
 summary(decision_tree)
 ```
 
-We predict using above model, and evaluate the prediction using confusion matrix. Our accuracy comes out to be 0.5804 and kappa to be 0.1608 which is lower than most of our first level models.
+We predict using the above model and evaluate the prediction using confusion matrix. This allows us to determine the distribution of false positives (i.e. songs that were predicted as popular but were actually not) and false negatives (i.e. songs that were not predicted as popular but actually were); it also allows us to understand the overall model performance and its predictability by examining its accuracy and kappa values.
 ```{r dt_confusion}
 decision_predict <- predict(decision_tree, spotify_test)
 confusionMatrix(as.factor(decision_predict), as.factor(spotify_test$track_popularity), positive = "1")
 ```
+
+Our accuracy for this model 0.5804 (or 58%) and kappa is 0.1608. These values are relatively low compared to most of our other first level models like SVM and ANN. The reason for this may be that we are training the tree with too many variables that are not as relevant in making predictions about track popularity. Small changes in the training dataset could lead to drastically different results, for the configuration of splitting nodes and the overall tree structure would change.
+
+Nevertheless, we decided to continue with this model, as its accuracy is relatively close to those obtained by other models and may train well when combined with other model predictions.
 
 ```{r dt_save, include=FALSE}
 saveRDS(decision_predict,"../Data/decision_tree_pred.rds")

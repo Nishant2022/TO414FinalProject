@@ -5,6 +5,8 @@ load("../Data/SpotifyTrainTest.Rdata")
 library(caret)
 ```
 
+Logistic regression is a supervised learning algorithm which uses logistic functions to make predictions about an outcome, which in this case is track popularity.
+
 ### Base Model
 
 First, we build our base model by simply putting all variables into account.
@@ -13,7 +15,7 @@ logistic_basemodel <- glm(track_popularity ~ ., data =spotify_train)
 summary(logistic_basemodel)
 ```
 
-Using the base model, we predict the track_popularity. The prediction comes as a probability, so using the median as the threshold, we change the prediction into binary so that we can evaluate the model using confusion matrix.
+Using the base model, we predict the track popularity. The prediction comes as a probability, so using the median as the threshold, we change the prediction into binary so that we can evaluate the model using confusion matrix.
 ```{r lr_prediciton}
 logistic_base_prediction <- predict(logistic_basemodel, spotify_test, type = "response")
 summary(logistic_base_prediction)

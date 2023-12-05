@@ -16,7 +16,7 @@ spotify_svm <- ksvm(track_popularity ~ ., data = spotify_mm_train,
 ```
 
 We then make predictions for track popularity using the laplacedot kernel for SVM.
-We examined the summary data (i.e. mean, median, etc) to determine a threshold with which to label a track as popular. We decided use the median of the predicted values to determine the cut-off threshold for popularity. 
+We examined the summary data (i.e. mean, median, etc) to determine a threshold with which to label a track as popular. We decided to use the median of the predicted values to determine the cut-off threshold for popularity. 
 ```{r svm_laplace prediction}
 spotify_svm_pred_laplace <- predict(spotify_svm_laplace, spotify_mm_test)
 summary(spotify_svm_pred_laplace)
@@ -54,7 +54,8 @@ The selected median value for the threshold is `r median(spotify_svm_pred_vanill
 spotify_svm_pred_vanilla_binary <- ifelse(spotify_svm_pred_vanilla >= median(spotify_svm_pred_vanilla), 1, 0)
 confusionMatrix(as.factor(spotify_svm_pred_vanilla_binary), as.factor(spotify_mm_test$track_popularity))
 ```
-From the above confusion matrices, we can see that the rbf kernel works the best with the spotify data as it has the highest kappa value.
+From the above confusion matricies, we can see that the rbf kernel works the best with the spotify data as it has the highest kappa value.
+
 We will use it in the combined model.
 
 ```{r svm_save, include=FALSE}
