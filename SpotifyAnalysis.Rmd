@@ -65,20 +65,34 @@ This could lead to an artist only promoting their most popular songs, and not wa
 ```
 
 # Conclusion
-
 While our model does not have the best accuracy, with approximately 62\%, it is still better than blindly guessing that a song is popular or not.
 The model is also partially generalizable with a kappa of 0.2397.
 
-Throughout our testing, we struggled to get kappas any higher.
-This might be because of the nature of the data.
-Music tastes are very subjective and therefore likely made it hard to predict which songs would be popular.
+So given the above accuracy and kappa, how can this model be scaled to benefit the music industry?
 
-While an artist may not be able to solely rely on our model to determine which songs will be popular and therefore which songs to promote, our model can be used as a tool in the decision process.
+In our analysis, we assume our audience to be both individual song artists and record labels. This model can be useful for song artists, as is will allow them to determine the predicted popularity of their new song given significant metrics such as loudness, accousticness, tempo, and more. Moreover, if an artist solely has an idea for a new song but has not completed it yet, this model can help to gauge the popularity of the *type* of song the artist is planning to craft.
 
-Record companies can also use this model to try and predict which artists to sign in the future.
-They can quickly analyze all songs of a given artist and determine if their style is popular.
+Let's take, for example, a song called "Dealer" by Troy Murray. It has the following attributes:
 
-In addition this model can be used to decide whether to release a song as a single or to include it in an album.
-Typically, if a song is going to be popular, artists will release it as a single and their other songs will be in an album.
+- Danceability: 0.713
+- Energy: 0.649
+- Key: 9
+- Loudness: -10.353
+- Mode: 0
+- Speechiness: 0.0586
+- Accousticness: 0.113000
+- Instrumentalness: 0.0453
+- Liveness: 0.175
+- Valence: 0.3200
+- Tempo: 101.034
 
-Overall though, when used in the music industry, our model can help make predictions about which songs will be popular, helping to increase profits of both artists and record labels.
+Given this song's attributes, our model predicted it to have a track popularity score of 0. Comparing this score with the true track popularity assigned to this song, we see that the classification was correct. Serving as a supplemental guide, this model could help artists like Troy understand the projected popularity of their songs in order to gauge how much money (if any) to spend on marketing their new song depending on whether the general population is predicted to enjoy it. This also helps artists like Troy determine whether they should spend time making similar songs in the future or potentially reinvent their music-making strategy to make songs that better appeal to a larger audience of listeners.
+
+In terms of record labels, it makes sense to sign artists that have a high proportion of songs with high track_popularity such that their songs are predicted to be popular. This way, record labels know prior to signing a candidate that they are on track to reach a broader audience and potentially profit more from popular songs. This also allows record labels, or the music industry, to decide which songs it should spend more money advertising. By selecting songs classified as being popular by our model, these agencies reduce the risk of over-spending on unpopular songs that don't end up collecting enough money to break even or profit. 
+
+## Limitations
+Though our model helps relate multiple distinct song attributes to a final popularity outcome, it is still possible for the model to miss-classify songs, surfacing a trade-off between false negatives (i.e. songs predicted to be unpopular but are actually popular) and false positives (i.e. songs predicted to be popular but are actually not). Due to the nature of the problem, it would be unreasonable to completely eliminate either of these, as one could make the argument that having fewer songs predicted to be popular can make the model's decision more strict and almost guarantee that any given song whose predicted popularity is 1 will be popular; however, this degree of constraint discourages the generation and promotion of songs that would have truly been popular but missed the threshold of classification set by the model.
+
+Additionally, since the music industry, listeners' preferences, and types of popular songs are always changing, it may not be the case that our model could perform well in the future. In order to ensure that our model is up-to-date with new songs, we'd need to continuously train it using songs that get released. Though, given the breadth of songs available in the industry today, it may not be feasible to train our model in a timely manner such that it understands the popularity trends for every single song.
+
+Nevertheless, we recommend our model's final result to be used as supplemental information to guide an artist or record label's understanding of the potential popularity of a song. Though our model may not be a complete source of truth given it has not obtained perfect accuracy, it can still serve as a critical resource to understand the general acceptance of various types of songs in the music industry given attributes such as loudness, accousticness, tempo, and many more.
