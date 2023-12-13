@@ -10,7 +10,6 @@ A decision tree is a supervised machine learning model that follows a tree-like 
 Here, we build a simple decision tree using our training dataset. As the plot shows, all variables that had not been filtered out of the original dataset are taken into account. 
 ```{r dt_build, cache=TRUE}
 decision_tree <- C5.0(as.factor(track_popularity) ~ ., data = spotify_train)
-summary(decision_tree)
 ```
 
 We predict using the above model and evaluate the prediction using confusion matrix. This allows us to determine the distribution of false positives (i.e. songs that were predicted as popular but were actually not) and false negatives (i.e. songs that were not predicted as popular but actually were); it also allows us to understand the overall model performance and its predictability by examining its accuracy and kappa values.
